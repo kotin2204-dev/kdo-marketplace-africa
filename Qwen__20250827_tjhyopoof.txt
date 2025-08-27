@@ -1,0 +1,39 @@
+kdo-marketplace/
+│
+├── frontend/                 # React + Vite + TypeScript
+│   ├── public/
+│   │   └── manifest.json     # PWA
+│   ├── src/
+│   │   ├── assets/           # images, logos
+│   │   ├── components/       # UI réutilisables
+│   │   ├── pages/
+│   │   │   ├── Home.tsx
+│   │   │   ├── Auth/
+│   │   │   ├── Product/
+│   │   │   ├── Seller/
+│   │   │   └── Admin/
+│   │   ├── services/         # API calls
+│   │   ├── context/          # Auth, Theme, Cart
+│   │   ├── i18n/             # traductions
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   └── vite.config.ts
+│
+├── backend/                  # Node.js + Express
+│   ├── controllers/
+│   ├── routes/
+│   ├── models/
+│   ├── middleware/
+│   ├── utils/
+│   ├── config/
+│   └── server.ts
+│
+├── database/
+│   └── schema.sql            # PostgreSQL
+│
+├── docs/
+│   └── API.md                # documentation API
+│
+├── .env.example
+├── package.json
+└── README.md

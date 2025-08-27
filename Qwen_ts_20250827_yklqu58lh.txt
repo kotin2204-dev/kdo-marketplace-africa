@@ -1,0 +1,39 @@
+import axios from 'axios';
+import Order from '../models/Order';
+
+export const initiatePayment = async (req, res) => {
+  const { orderId, amount, phone } = req.body;
+  const order = await Order.findById(orderId);
+  if (!order) return res.status(404).json({ msg: 'Commande introuvable' });
+
+  const payload = {
+    site_id: process.env.MOBILE_MONEY_SITE_ID,
+    api_key: process.env.MOBILE_MONEY_API_KEY,
+    amount,
+    phone,
+    order_id: orderId,
+    currency: 'XOF'
+  };
+
+  try {
+    const response = await axios.post('https://api.mobilemoney.example/v1/pay', payload);
+    if (response.data.status === 'initiated') {
+      order.payment_status = 'pending';
+      await order.save();
+      await sendSMS(phone, `Confirmez le paiement de ${amount} XOF à KDo.`);
+      res.json({ success: true, redirect_url: response.data.redirect_url });
+    }
+  } catch (err) {
+    res.status(500).json({ msg: 'Erreur paiement' });
+  }
+};
+
+// Webhook pour confirmation
+export const paymentWebhook = async (req, res) => {
+  const { order_id, status } = req.body;
+  if (status === 'success') {
+    await Order.findByIdAndUpdate(order_id, { status: 'paid' });
+    // Notifier vendeur
+  }
+  res.sendStatus(200);
+};

@@ -1,0 +1,6 @@
+// Route secrète pour dev
+if (process.env.NODE_ENV === 'development') {
+  app.get('/api/demo/buyer', (_, res) => {
+    res.json({ email: 'demo@buyer.kdo', password: 'kdo123' });
+  });
+}

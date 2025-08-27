@@ -1,0 +1,28 @@
+import User from '../models/User';
+import { sendSMS } from '../utils/sms';
+
+export const register = async (req, res) => {
+  const { phone, role } = req.body;
+  let user = await User.findOne({ phone });
+  if (user) return res.status(400).json({ msg: 'Numéro déjà utilisé' });
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  user = new User({ phone, role, otp });
+  await user.save();
+
+  await sendSMS(phone, `Votre code KDo : ${otp}`);
+  res.json({ msg: 'OTP envoyé' });
+};
+
+export const verifyOTP = async (req, res) => {
+  const { phone, otp } = req.body;
+  const user = await User.findOne({ phone, otp });
+  if (!user) return res.status(400).json({ msg: 'OTP invalide' });
+
+  user.verified = true;
+  user.otp = null;
+  await user.save();
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '7d' });
+  res.json({ token, user });
+};
